@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Anthropic from '@anthropic-ai/sdk';
+import Groq from "groq-sdk";
 import { v4 as uuidv4 } from 'uuid';
 import { Sparkles, Loader2 } from 'lucide-react';
 import type { LineItem } from '../types';
@@ -20,24 +20,24 @@ export default function AILineItemGenerator({ onGenerate }: AILineItemGeneratorP
     setError(null);
 
     try {
-      const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-      if (!apiKey || apiKey === 'your_anthropic_api_key_here') {
-        throw new Error('Please add a valid VITE_ANTHROPIC_API_KEY in the .env file');
+      const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+      if (!apiKey || apiKey === 'your_groq_api_key_here') {
+        throw new Error('Please add a valid VITE_GROQ_API_KEY in the .env file');
       }
 
-      const anthropic = new Anthropic({
-        apiKey,
-        dangerouslyAllowBrowser: true,
+      const groq = new Groq({ 
+        apiKey, 
+        dangerouslyAllowBrowser: true 
       });
 
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6', // Using exactly the model requested by user
-        max_tokens: 1024,
-        system: "You are an assistant that extracts invoice line items from text. Return a raw JSON array of objects. Each object must have 'description' (string), 'quantity' (number), and 'unitPrice' (number). Do not return any markdown formatting, just the raw JSON array.",
-        messages: [{ role: 'user', content: prompt }]
+      const YOUR_PROMPT_HERE = `You are an assistant that extracts invoice line items from text. Return a raw JSON array of objects. Each object must have 'description' (string), 'quantity' (number), and 'unitPrice' (number). Do not return any markdown formatting, just the raw JSON array. For example: [{"description": "Landing page", "quantity": 1, "unitPrice": 125}]. Text to process: ${prompt}`;
+
+      const response = await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "user", content: YOUR_PROMPT_HERE }],
       });
 
-      const text = response.content[0].type === 'text' ? response.content[0].text : '';
+      const text = response.choices[0]?.message?.content || '';
       
       const jsonStr = text.replace(/```json\n?|\n?```/g, '').trim();
       const parsed = JSON.parse(jsonStr);
@@ -78,7 +78,7 @@ export default function AILineItemGenerator({ onGenerate }: AILineItemGeneratorP
               type="text"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder='e.g., "Built a landing page, 3 pages, took 5 hours at $25/hr"'
+              placeholder='e.g., "Built a website for a restaurant, 3 pages, took 5 hours at $25/hr"'
               className="flex-1 px-3 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
