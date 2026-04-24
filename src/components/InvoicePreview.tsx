@@ -3,7 +3,7 @@ import type { InvoiceData } from '../types';
 
 interface InvoicePreviewProps {
   data: InvoiceData;
-  previewRef?: React.RefObject<HTMLDivElement>;
+  previewRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function InvoicePreview({ data, previewRef }: InvoicePreviewProps) {

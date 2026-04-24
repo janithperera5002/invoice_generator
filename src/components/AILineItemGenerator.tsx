@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Groq from "groq-sdk";
 import { v4 as uuidv4 } from 'uuid';
 import { Sparkles, Loader2 } from 'lucide-react';

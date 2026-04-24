@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { Upload } from 'lucide-react';
 import type { InvoiceData } from '../types';
 import LineItemsTable from './LineItemsTable';
